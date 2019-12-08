@@ -1,4 +1,4 @@
-# aws-ecs-bookstack
+# aws-ecs-wikisite
 
 This is a repository for my personal project of setting up a high availability application (In this case, [Bookstack](https://github.com/BookStackApp/BookStack)) on AWS Fargate.
 
