@@ -7,3 +7,5 @@ The following AWS technologies will be used.
 - ALB
 - RDS
 - AWS CDK (Cloud Development Kit)
+
+I will most likely write my own Dockerfile for Bookstack (or edit an existing Image) as putting it behind a reverse proxy would make it a pain to load balance using an ELB, since the existing image configures it without any Certificates.
