@@ -1,33 +1,53 @@
 version: "3.7"
 services:
 
-  bookstack_db:
-    image: mariadb
-    environment:
-      MYSQL_DATABASE: bookstack_db
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
-      MYSQL_PASSWORD: change-me
-      MYSQL_USER: bookstackapp
-      TZ: Pacific/Auckland
-
-  bookstack:
-    container_name: bookstack
-    image: linuxserver/bookstack
+  wiki:
+    image: requarks/wiki:2
     restart: unless-stopped
-    ports:
-      - 8080:80
-    environment:  
-      DB_HOST: bookstack_db
-      DB_USER: bookstackapp
-      DB_PASSWORD: change-me
-      DB_DATABASE: bookstack_db
+    container_name: wiki
+    environment:
+      DB_TYPE: postgres
+      DB_NAME: wikijs
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: changeme
     depends_on:
-      - bookstack_db
+      - postgres
+      - nginx
 
+  wiki2:
+    image: requarks/wiki:2
+    restart: unless-stopped
+    container_name: wiki2
+    environment:
+      DB_TYPE: postgres
+      DB_NAME: wikijs
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: changeme
+    depends_on:
+      - postgres
+      - nginx
 
-
-
-
-
-    
-    
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    container_name: nginx
+    ports:
+    - "443:443"
+    - "80:80"
+    volumes:
+    - ./nginx-conf.conf:/etc/nginx/conf.d/default.conf
+  
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    container_name: postgres
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: wikijs
+      POSTGRES_USER: postgres
