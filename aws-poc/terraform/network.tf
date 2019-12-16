@@ -11,30 +11,30 @@ resource "aws_vpc" "wikijs_vpc" {
 # create 2 private subnets in seperate availability zones
 resource "aws_subnet" "wikijs_private_subnet" {
   count             = 2
-  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
-  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
-  vpc_id            = "${aws_vpc.wikijs_vpc.vpc_id}"
+  cidr_block        = cidrsubnet(aws_vpc.wikijs_vpc.cidr_block, 8, count.index)
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  vpc_id            = aws_vpc.wikijs_vpc.id
 }
 
 # create 2 public subnets in seperate availability zones
 resource "aws_subnet" "wikijs_public_subnet" {
   count                   = 2
-  cidr_block              = cidrsubnet(aws_vpc.main.cidr_block, 8, 2 + count.index)
-  availability_zone       = "${data.aws_availability_zones.available.names[count.index]}"
-  vpc_id                  = "${aws_vpc.wikijs_vpc.vpc_id}"
+  cidr_block              = cidrsubnet(aws_vpc.wikijs_vpc.cidr_block, 8, 2 + count.index)
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  vpc_id                  = aws_vpc.wikijs_vpc.id
   map_public_ip_on_launch = true
 }
 
 # Internet Gateway for the public subnet
 resource "aws_internet_gateway" "wikijs_gw" {
-  vpc_id = "${aws_vpc.wikijs_vpc.vpc_id}"
+  vpc_id = aws_vpc.wikijs_vpc.id
 }
 
 # Route the public subnet traffic through the IGW
 resource "aws_route" "wikijs_public_subnet_route" {
-  route_table_id         = "${aws_vpc.wikijs_vpc.route_table_id}"
+  route_table_id         = aws_vpc.wikijs_vpc.main_route_table_id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.wikijs_gw.gateway_id}"
+  gateway_id             = aws_internet_gateway.wikijs_gw.id
 }
 
 # Create a NAT gateway with an Elastic IP for each private subnet to get internet connectivity
@@ -53,7 +53,7 @@ resource "aws_nat_gateway" "wikijs_private_subnet_gw" {
 # Create a new route table for the private subnets, make it route non-local traffic through the NAT gateway to the internet
 resource "aws_route_table" "wikijs_private_subnet_route" {
   count  = 2
-  vpc_id = "${aws_vpc.wikijs_vpc.vpc_id}"
+  vpc_id = "${aws_vpc.wikijs_vpc.id}"
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -66,4 +66,11 @@ resource "aws_route_table_association" "private" {
   count          = 2
   subnet_id      = element(aws_subnet.wikijs_private_subnet.*.id, count.index)
   route_table_id = element(aws_route_table.wikijs_private_subnet_route.*.id, count.index)
+}
+
+# Create new DB Subnet group, this allows us to place the RDS instances in the private subnets.
+resource "aws_db_subnet_group" "wikijs_rds_subnet_group" {
+  name = "wikijs_db_subnet_group"
+  subnet_ids = ["${aws_subnet.wikijs_private_subnet.*.id}"]
+  description = "Private subnet group"
 }

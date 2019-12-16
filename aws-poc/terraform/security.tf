@@ -9,7 +9,6 @@ resource "aws_security_group_rule" "wikijs_alb_sg_allow_incoming_http" {
   from_port         = "80"
   to_port           = "80"
   protocol          = "tcp"
-  vpc_id            = "${aws_vpc.wikijs_vpc.id}"
   security_group_id = "${aws_security_group.wikijs_alb_sg.id}"
 }
 # Allow incoming HTTPS requests to load balancer
@@ -18,7 +17,6 @@ resource "aws_security_group_rule" "wikijs_alb_sg_allow_incoming_https" {
   from_port         = "443"
   to_port           = "443"
   protocol          = "tcp"
-  vpc_id            = "${aws_vpc.wikijs_vpc.id}"
   security_group_id = "${aws_security_group.wikijs_alb_sg.id}"
 }
 
@@ -33,7 +31,12 @@ resource "aws_security_group_rule" "wikijs_ecs_tasks_sg_allow_incoming_3000" {
   from_port               = "3000"
   to_port                 = "3000"
   protocol                = "tcp"
-  vpc_id                  = "${aws_vpc.wikijs_vpc.id}"
   security_group_id       = "${aws_security_group.wikijs_ecs_tasks_sg.id}"
-  source_security_group_id = "${aws_security_group.wikijs_alb_sg.aw}"
+  source_security_group_id = "${aws_security_group.wikijs_alb_sg.id}"
+}
+
+resource "aws_security_group" "wikijs_rds_sg" {
+  name        = "wikijs_rds_sg"
+  description = "allow access to port 5432 from ecs tasks"
+  vpc_id      = "${aws_vpc.wikijs_vpc.id}"
 }
