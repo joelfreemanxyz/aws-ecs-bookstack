@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  app:
+    build: ./app/
+    ports:
+      - "5000:5000"
+    environment: 
+      DB_URI: 'postgresql://postgres:password1@postgres/postgres'
+  postgres:
+    image: postgres:alpine
+    environment: 
+      POSTGRES_PASSWORD: password1
