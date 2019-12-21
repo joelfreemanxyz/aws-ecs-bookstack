@@ -31,3 +31,7 @@ override.tf.json
 *.pyc
 
 */__pycache__
+
+*.env
+.env/*
+*.env/*
