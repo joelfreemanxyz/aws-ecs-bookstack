@@ -35,3 +35,5 @@ override.tf.json
 *.env
 .env/*
 *.env/*
+*.vscode
+*/.vscode

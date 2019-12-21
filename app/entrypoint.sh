@@ -2,8 +2,10 @@
 
 if [[ $CREATE_DB -eq 'true' ]]
 then
-  python -c 'from api.core import db; db.create_all()'
-  cd api && python app.py
+
+  cd api
+  python -c 'from app import db; db.create_all(); db.session.commit()'
+  python app.py
 else
   cd api && python app.py
 fi

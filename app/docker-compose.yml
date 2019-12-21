@@ -7,16 +7,12 @@ services:
       POSTGRES_PASS: pass
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
-      CONFIG: 'development'
+      CONFIG: developmentConfig
+      CREATE_DB: 'true'
     ports:
       - "5000:5000"
-    depends_on:
-      - postgres
   postgres:
     image: postgres:alpine
     container_name: postgres
     environment:
       POSTGRES_PASSWORD: pass
-
-      
-      

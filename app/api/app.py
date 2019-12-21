@@ -3,7 +3,10 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import exc
 from os import environ 
+import config, logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
 
@@ -14,20 +17,23 @@ except KeyError:
     raise Exception(message)
 
 app.config.from_object('config.{}'.format(environ['CONFIG']))
-api = Api(app)
+api = Api(app, catch_all_404s=True)
 db = SQLAlchemy(app)
+
+# logging
 
 # model
 class Dog(db.Model):
+    __tablename__ = 'dog'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     age = db.Column(db.Integer)
     color = db.Column(db.String(255))
 
-    def __repr__(self):
-        return '<Dog (id=%d, name=%s, age=%d, color=%s)>' % (
-            self.id, self.name, self.age, self.color 
-    )
+    #def __repr__(self):
+    #   return '<Dog (id=%d, name=%s, age=%d, color=%s)>' % (
+    #        self.id, self.name, self.age, self.color 
+    #)
 
 # routes
 class dogById(Resource):
@@ -46,14 +52,16 @@ class dogById(Resource):
         db.session.commit()
 
     # update existing resource 
-    def put(self, dog_id, dog_name, dog_age, dog_color):
-        dog_name = request.body['name']
-        dog_age = request.body['age']
-        dog_color = request.body['color']
-
-        newDog = Dog(id=dog_id, name=dog_name, age=dog_age, color=dog_color)
-        db.session.add(newDog)
-        db.session.commit()
+    def put(self, dog_id):
+        dog_name = request.args.get('name')
+        dog_age = request.args.get('age')
+        dog_color = request.args.get('color')
+        try:
+            newDog = Dog(id=dog_id, name=dog_name, age=dog_age, color=dog_color)
+            db.session.add(newDog)
+            db.session.commit()
+        except psycopg2.erors.UniqueViolation:
+            return {'ID ALREADY EXISTS'}
 
         return {
             'id': dog_id,
@@ -68,9 +76,11 @@ class healthCheck(Resource):
 
 # endpoints
 api.add_resource(healthCheck, '/health')
-api.add_resource(dogById, '/dog/<string:dog_id>')
+api.add_resource(dogById, '/dog/<int:dog_id>')
 
 if __name__ == '__main__':
+    log_handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=10)
+    log_handler.setLevel(logging.INFO)
     app.run(
         host="0.0.0.0",
         port=5000
