@@ -8,7 +8,7 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_DB: postgres
       CONFIG: developmentConfig
-      CREATE_DB: 'true'
+      CREATE_DB: "true"
     ports:
       - "5000:5000"
   postgres:
