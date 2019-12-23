@@ -1,5 +1,0 @@
-flask
-flask_sqlalchemy
-flask_restful
-psycopg2-binary
-sqlalchemy
