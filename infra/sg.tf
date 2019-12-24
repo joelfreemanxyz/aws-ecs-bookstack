@@ -39,6 +39,7 @@ resource "aws_security_group" "wp_ecs_task_sg" {
 }
 
 resource "aws_security_group" "wp_db_sg" {
+  vpc_id = aws_vpc.wp_vpc.id
   name = "wp-rds-sg"
 
   ingress {

@@ -13,7 +13,8 @@ services:
    wordpress:
      depends_on:
        - db
-     build: .
+     build:
+      context: image/.
      ports:
        - "8000:80"
      restart: always
