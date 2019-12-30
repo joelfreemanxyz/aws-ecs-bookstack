@@ -1,6 +1,9 @@
 # aws-ecs-ha-app
 
-This is a repository for my personal project of setting up a high availability Wordpress site on AWS Fargate.
+This is a repository for my personal project of setting up high availability 'hello-world' application on AWS Fargate with terraform, using a GitLab CI/CD pipeline for deployment.
 
 A rough diagram of the infrastructure is below.
-![Application Diagram](img/diagram.png)
+![Application Diagram](img/aws_vpc_diagram.png)
+
+A rough diagram of the CI/CD pipeline is below.
+![CI/CD Diagram](img/ci_cd_pipeline_aws_ecs_ha_app.png)

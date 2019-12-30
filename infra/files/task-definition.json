@@ -1,0 +1,23 @@
+[
+  {
+    "name": "app",
+    "image": "joelfreemanxyz/aws-ecs-app:1",
+    "cpu": 512,
+    "memory": 512,
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/app",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+    },
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080
+      }
+    ]
+  }
+]
