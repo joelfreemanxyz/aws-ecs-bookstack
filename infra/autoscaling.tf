@@ -1,12 +1,14 @@
-resource "aws_appautoscaling_target" "app_ecs_autoscaling_target" {
+resource "aws_appautoscaling_target" "appautoscaling_target" {
   service_namespace = "ecs"
   resource_id = "service/${aws_ecs_cluster.app_ecs_cluster.name}/${aws_ecs_service.app_ecs_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity = 4
   max_capacity = 8
+
+  depends_on = [aws_ecs_cluster.app_ecs_cluster, aws_ecs_service.app_ecs_service]
 }
 
-resource "aws_appautoscaling_policy" "app_ecs_autoscaling_scale_up" {
+resource "aws_appautoscaling_policy" "app_scale_up" {
   name = "app-scale-up"
   service_namespace = "ecs"
   resource_id = "service/${aws_ecs_cluster.app_ecs_cluster.name}/${aws_ecs_service.app_ecs_service.name}"
@@ -22,6 +24,8 @@ resource "aws_appautoscaling_policy" "app_ecs_autoscaling_scale_up" {
       scaling_adjustment = 1
     }
   }
+
+  depends_on = [aws_ecs_cluster.app_ecs_cluster, aws_ecs_service.app_ecs_service]
 }
 
 resource "aws_cloudwatch_metric_alarm" "app_cloudwatch_scale_up_alarm" {
@@ -35,14 +39,15 @@ resource "aws_cloudwatch_metric_alarm" "app_cloudwatch_scale_up_alarm" {
   threshold = "80"
 
   dimensions = {
-      ClusterName = aws_ecs_cluster.app_ecs_cluster.name
-      ServiceName = aws_ecs_service.app_ecs_service.name
+    ClusterName = aws_ecs_cluster.app_ecs_cluster.name
+    ServiceName = aws_ecs_service.app_ecs_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.app_ecs_autoscaling_scale_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.app_scale_up.arn]
+  depends_on = [aws_appautoscaling_policy.app_scale_up, aws_appautoscaling_target.appautoscaling_target]
 }
 
-resource "aws_appautoscaling_policy" "app_ecs_autoscaling_scale_down" {
+resource "aws_appautoscaling_policy" "app_scale_down" {
   name = "app-scale-down"
   service_namespace = "ecs"
   resource_id = "service/${aws_ecs_cluster.app_ecs_cluster.name}/${aws_ecs_service.app_ecs_service.name}"
@@ -58,6 +63,7 @@ resource "aws_appautoscaling_policy" "app_ecs_autoscaling_scale_down" {
       scaling_adjustment = -1
     }
   }
+  depends_on = [aws_ecs_cluster.app_ecs_cluster, aws_ecs_cluster.app_ecs_service]
 }
 
 resource "aws_cloudwatch_metric_alarm" "app_cloudwatch_scale_down_alarm" {
@@ -75,5 +81,6 @@ resource "aws_cloudwatch_metric_alarm" "app_cloudwatch_scale_down_alarm" {
       ServiceName = aws_ecs_service.app_ecs_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.app_ecs_autoscaling_scale_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.app_scale_down.arn]
+  depends_on = [aws_appautoscaling_policy.app_scale_down, aws_ecs_cluster.app_ecs_cluster, aws_ecs_cluster.app_ecs_service]
 }

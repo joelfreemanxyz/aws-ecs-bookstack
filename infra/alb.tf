@@ -4,6 +4,8 @@ resource "aws_lb" "app_lb" {
   load_balancer_type = "application"
   security_groups = [aws_security_group.app_alb_sg.id]
   subnets = [aws_subnet.app_public_subnet_0.id, aws_subnet_app_public_subnet_1.id]
+
+  depends_on = [aws_security_group.app_alb_sg, aws_subnet.app_public_subnet_0, aws_subnet.app_public_subnet_1]
 }
 
 resource "aws_lb_target_group" "app_lb_target_group" {
@@ -22,6 +24,7 @@ resource "aws_lb_target_group" "app_lb_target_group" {
     path                = "/health"
     unhealthy_threshold = "2"
   }
+  depends_on = [aws_lb.app_lb]
 }
 
 resource "aws_lb_listener" "app_lb_listener" {
@@ -33,5 +36,6 @@ resource "aws_lb_listener" "app_lb_listener" {
     type = "forward"
     target_group_arn = aws_lb_target_group.app_lb_target_group.arn
   }
+  depends_on = [aws_lb.app_lb, aws_lb_target_group.app_lb_target_group]
 }
 
