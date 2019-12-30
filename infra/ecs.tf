@@ -4,7 +4,7 @@ resource "aws_ecs_cluster" "app_ecs_cluster" {
 }
 
 resource "aws_ecs_service" "app_ecs_service" {
-  name                = "app-ecs-service"
+  name                = "aws-ecs-app"
   cluster             = aws_ecs_cluster.app_ecs_cluster.id
   task_definition     = aws_ecs_task_definition.app_ecs_taskdef.arn
   scheduling_strategy = "REPLICA"

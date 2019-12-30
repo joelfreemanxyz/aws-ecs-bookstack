@@ -1,0 +1,47 @@
+stages:
+  - test
+  - build_and_test_image
+  - deploy
+
+test:
+  image: python:alpine
+  stage: test
+  script:
+    - cd app/image
+    - pip install .
+    - py.test
+
+build_docker_image:
+  latest: docker:dind
+  stage: build_and_test_image
+  script:
+    - cd app/
+    - docker build -t NEW_APP_IMAGE
+
+test_docker_image:
+  image: docker:dind
+  stage: build_and_test_image
+  script:
+    - docker run NEW_APP_IMAGE -e TESTING=TRUE
+
+push_image:
+  image: docker:dind
+  stage: deploy
+  before_script:
+    - docker login --username=$DOCKER_USERNAME --password $DOCKER_PASSWORD
+  script:
+    - docker tag NEW_APP_IMAGE joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)
+    - docker push joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)
+
+deploy-to-prod:
+  image: silintl/ecs-deploy
+  stage: deploy
+  script:
+    - ecs-deploy -k $AWS_ACCESS_KEY -s $AWS_SECRET_KEY -r ap-southeast-2 -c app-ecs-cluster -n aws-ecs-app -i joelfreeman/aws-ecs-app -e $CI_COMMIT_SHA --enable-rollback
+
+
+  
+    
+
+
+

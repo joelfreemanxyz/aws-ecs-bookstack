@@ -7,3 +7,5 @@ A rough diagram of the infrastructure is below.
 
 A rough diagram of the CI/CD pipeline is below.
 ![CI/CD Diagram](img/ci_cd_pipeline_aws_ecs_ha_app.png)
+
+the docker image for this application is [here](https://hub.docker.com/r/joelfreeman/aws-ecs-app).
