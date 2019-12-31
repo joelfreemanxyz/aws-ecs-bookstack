@@ -27,7 +27,8 @@ build_test_push_image:
     - cd app/
     - docker build -t new_app_image .
     - docker run -e TESTING=TRUE new_app_image
-    - docker tag new_app_image "joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)"
+    - echo $CI_COMMIT_SHORT_SHA
+    - docker tag new_app_image "joelfreeman/aws-ecs-app:$(echo $CI_COMMIT_SHORT_SHA)"
     - docker push "joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)"
 
 deploy-to-prod:
