@@ -12,7 +12,7 @@ test:
     - py.test
 
 build_docker_image:
-  latest: docker:dind
+  image: docker:dind
   stage: build_and_test_image
   script:
     - cd app/
