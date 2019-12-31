@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ $TESTING == "TRUE" ]; then
+if [ $TESTING -eq "TRUE" ]; then
     echo "TESTING IS TRUE"
     py.test
 else
     echo "$TESTING is false"
-    #python src/server.py
+    python src/server.py
 fi
