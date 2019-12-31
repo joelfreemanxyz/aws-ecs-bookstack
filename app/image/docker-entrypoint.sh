@@ -1,7 +1,6 @@
 #!/bin/sh
 
-echo "$TESTING"
-if [ "$TESTING" == "TRUE" ]; then
+if [ $TESTING == "TRUE" ]; then
     echo "TESTING IS TRUE"
     py.test
 else
