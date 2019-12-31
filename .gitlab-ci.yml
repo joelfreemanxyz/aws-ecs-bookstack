@@ -12,7 +12,7 @@ test:
     - py.test
 
 build_test_push_image:
-  image: docker:dind
+  image: docker:19.03.5-dind
   stage: build_test_push
   before_script:
     - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
