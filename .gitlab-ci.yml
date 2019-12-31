@@ -1,6 +1,6 @@
 stages:
   - test
-  - build_and_test_image
+  - build_test_push
   - deploy
 
 test:
@@ -11,26 +11,16 @@ test:
     - pip install .
     - py.test
 
-build_docker_image:
+build_test_push_image:
   image: docker:dind
-  stage: build_and_test_image
-  script:
-    - cd app/
-    - docker build -t NEW_APP_IMAGE
-
-test_docker_image:
-  image: docker:dind
-  stage: build_and_test_image
-  script:
-    - docker run NEW_APP_IMAGE -e TESTING=TRUE
-
-push_image:
-  image: docker:dind
-  stage: deploy
+  stage: build_test_push
   before_script:
     - docker login --username=$DOCKER_USERNAME --password $DOCKER_PASSWORD
   script:
-    - docker tag NEW_APP_IMAGE joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)
+    - cd app/
+    - docker build -t new_app_image .
+    - docker run new_app_image -e TESTING=TRUE
+    - doger tag new_app_image joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)
     - docker push joelfreeman/aws-ecs-app:$(CI_COMMIT_SHORT_SHA)
 
 deploy-to-prod:
