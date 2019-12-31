@@ -15,7 +15,7 @@ build_test_push_image:
   image: docker:dind
   stage: build_test_push
   before_script:
-    - docker login --username=$DOCKER_USERNAME --password $DOCKER_PASSWORD
+    - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
   script:
     - cd app/
     - docker build -t new_app_image .
