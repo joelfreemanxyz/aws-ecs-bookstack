@@ -1,3 +1,7 @@
+variables:
+  - DOCKER_DRIVER: overlay2
+  - DOCKER_TLS_CERTDIR: "/certs"
+
 stages:
   - test
   - build_test_push
@@ -12,9 +16,12 @@ test:
     - py.test
 
 build_test_push_image:
-  image: docker:19.03.5-dind
+  image: docker:19.03.5
+  services:
+    - docker:19.03.5-dind
   stage: build_test_push
   before_script:
+    - docker info 
     - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
   script:
     - cd app/
