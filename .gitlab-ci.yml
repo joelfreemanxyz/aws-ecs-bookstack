@@ -34,6 +34,6 @@ build_test_push_image:
 deploy-to-prod:
   image:
     name: silintl/ecs-deploy
-    entrypoint: ["/bin/sh"]
+    entrypoint: ["sh"]
   stage: deploy
   script: /ecs-deploy -k $AWS_ACCESS_KEY -s $AWS_ACCESS_KEY -r ap-southeast-2 -c app-ecs-cluster -n aws-ecs-app -i 'joelfreeman/aws-ecs-app:"$CI_COMMIT_SHA"' --enable-rollback --timeout 300
