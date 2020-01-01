@@ -69,14 +69,14 @@ resource "aws_nat_gateway" "app_nat_gw_1" {
   subnet_id = aws_subnet.app_public_subnet_1.id
   allocation_id = aws_subnet.app_private_subnet_1.id
 
-  depends_on = [aws_eip.app_nat_gw_ip_1, aws_subnet.app.app_private_subnet_1, aws_subnet.app_public_subnet_1]
+  depends_on = [aws_eip.app_nat_gw_ip_1, aws_subnet.app_private_subnet_1, aws_subnet.app_public_subnet_1]
 }
 
 # create a route table, routing all non local traffic through the nat gateway.
 resource "aws_route" "app_private_route_table_0" {
-  cidr_block = "0.0.0.0/0"
-  vpc_id = aws_vpc.app_vpc.id
-  nat_gateway_id = aws_nat_gateway.app_nat_gw_0
+  route_table_id = "private-subnet-0-to-gw-0-rt"
+  nat_gateway_id = aws_nat_gateway.app_nat_gw_0.id
+  destination_cidr_block = "0.0.0.0/0"
 
   depends_on = [aws_vpc.app_vpc, aws_nat_gateway.app_nat_gw_0]
 }
@@ -84,23 +84,23 @@ resource "aws_route" "app_private_route_table_0" {
 # set this route table as default, so it doesn't default to the default route table.
 resource "aws_route_table_association" "app_private_route_table_association_0" {
   subnet_id = aws_subnet.app_private_subnet_0.id
-  route_table_id = aws_route_table.app_private_route_table_0.id
+  route_table_id = aws_route.app_private_route_table_0.route_table_id
 
-  depends_on = [aws_subnet.app_private_subnet_0, aws_route_table.app_private_route_table_0]
+  depends_on = [aws_subnet.app_private_subnet_0, aws_route.app_private_route_table_0]
 }
 
 # same as above, but for different NAT gateway and subnet.
-resource "aws_route_table" "app_private_route_table_1" {
-  vpc_id = aws_vpc.app_vpc.id
-  cidr_block = "0.0.0.0/0"
-  nat_gateway_id = aws_nat_gateway.app_nat_gw_1
+resource "aws_route" "app_private_route_table_1" {
+  route_table_id = "private-subnet-1-to-gw-1-rt"
+  nat_gateway_id = aws_nat_gateway.app_nat_gw_1.id
+  destination_cidr_block = "0.0.0.0/0"
 
   depends_on = [aws_vpc.app_vpc, aws_nat_gateway.app_nat_gw_1]
 }
 
 resource "aws_route_table_association" "app_private_route_table_association_1" {
   subnet_id = aws_subnet.app_private_subnet_1.id
-  route_table_id = aws_route_table.app_private_route_table_1.id
+  route_table_id = aws_route.app_private_route_table_1.id
   
-  depends_on = [aws_subnet.app_private_subnet_1, aws_route_table.app_private_route_table_1]
+  depends_on = [aws_subnet.app_private_subnet_1, aws_route.app_private_route_table_1]
 }

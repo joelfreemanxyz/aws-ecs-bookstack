@@ -3,7 +3,7 @@ resource "aws_lb" "app_lb" {
   internal = false
   load_balancer_type = "application"
   security_groups = [aws_security_group.app_alb_sg.id]
-  subnets = [aws_subnet.app_public_subnet_0.id, aws_subnet_app_public_subnet_1.id]
+  subnets = [aws_subnet.app_public_subnet_0.id, aws_subnet.app_public_subnet_1.id]
 
   depends_on = [aws_security_group.app_alb_sg, aws_subnet.app_public_subnet_0, aws_subnet.app_public_subnet_1]
 }

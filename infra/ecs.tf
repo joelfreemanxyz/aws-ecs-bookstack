@@ -1,6 +1,6 @@
 resource "aws_ecs_cluster" "app_ecs_cluster" {
   name               = "app-ecs-cluster"
-  capacity_providers = "FARGATE"
+  capacity_providers = ["FARGATE"]
 }
 
 resource "aws_ecs_service" "app_ecs_service" {
@@ -12,7 +12,7 @@ resource "aws_ecs_service" "app_ecs_service" {
   desired_count       = 3
   
   network_configuration {
-    security_groups = [aws_security_group.ecs_task_sg.id]
+    security_groups = [aws_security_group.app_ecs_task_sg.id]
     subnets = [aws_subnet.app_private_subnet_0.id, aws_subnet.app_private_subnet_1.id]
     assign_public_ip = true
   }
@@ -33,7 +33,7 @@ resource "aws_ecs_service" "app_ecs_service" {
     expression = "attribute:ecs.availability-zone in [ap-southeast-2a, ap-southeast-2b]"
   }
 
-  depends_on = [aws_ecs_task_definition.app_ecs_taskdef, aws_lb.app_lb, aws_lb_target_group.app_lb_target_group, aws_ecs_cluster.app_ecs_cluster, aws_security_group.ecs_task_sg, aws_subnet.app_private_subnet_0, aws_subnet.app_private_subnet_1]
+  depends_on = [aws_ecs_task_definition.app_ecs_taskdef, aws_lb.app_lb, aws_lb_target_group.app_lb_target_group, aws_ecs_cluster.app_ecs_cluster, aws_security_group.app_ecs_task_sg, aws_subnet.app_private_subnet_0, aws_subnet.app_private_subnet_1]
 }
 
 resource "aws_ecs_task_definition" "app_ecs_taskdef" {
