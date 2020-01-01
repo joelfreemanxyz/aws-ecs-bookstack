@@ -9,17 +9,16 @@ resource "aws_ecs_service" "app_ecs_service" {
   task_definition     = aws_ecs_task_definition.app_ecs_taskdef.arn
   scheduling_strategy = "REPLICA"
   launch_type         = "FARGATE"
-  desired_count       = 3
+  desired_count       = 4
   
   network_configuration {
     security_groups = [aws_security_group.app_ecs_task_sg.id]
     subnets = [aws_subnet.app_private_subnet_0.id, aws_subnet.app_private_subnet_1.id]
-    assign_public_ip = true
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_lb_target_group.arn
-    container_name   = "app"
+    container_name   = "app-container"
     container_port   = "8080"
   }
 
@@ -27,12 +26,13 @@ resource "aws_ecs_service" "app_ecs_service" {
 }
 
 resource "aws_ecs_task_definition" "app_ecs_taskdef" {
-  requires_compatibilities = ["FARGATE"]
   family = "app"
   network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  container_definitions = file("./files/task-definition.json")
   cpu = 256
   memory = 512
-  container_definitions = file("./files/task-definition.json")
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+
   depends_on = [aws_iam_role.ecs_task_execution_role]
 }
