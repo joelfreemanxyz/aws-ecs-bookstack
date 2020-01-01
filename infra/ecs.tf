@@ -18,7 +18,7 @@ resource "aws_ecs_service" "app_ecs_service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app_lb_target_group.arn
-    container_name   = "app-container"
+    container_name   = "app"
     container_port   = "8080"
   }
 
