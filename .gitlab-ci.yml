@@ -32,7 +32,8 @@ build_test_push_image:
     - docker push "joelfreeman/aws-ecs-app:$(echo $CI_COMMIT_SHORT_SHA)"
 
 deploy-to-prod:
-  image: silintl/ecs-deploy
+  image:
+    name: silintl/ecs-deploy
+    entrypoint: /bin/sh
   stage: deploy
-  script:
-    - ecs-deploy -k $AWS_ACCESS_KEY -s $AWS_SECRET_KEY -r ap-southeast-2 -c app-ecs-cluster -n aws-ecs-app -i 'joelfreeman/aws-ecs-app:"$CI_COMMIT_SHA"' --enable-rollback --timeout 300
+    script: /ecs-deploy -k $AWS_ACCESS_KEY -s $AWS_ACCESS_KEY -r ap-southeast-2 -c app-ecs-cluster -n aws-ecs-app -i 'joelfreeman/aws-ecs-app:"$CI_COMMIT_SHA"' --enable-rollback --timeout 300
