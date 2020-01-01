@@ -1,7 +1,7 @@
 [
   {
     "name": "app",
-    "image": "joelfreeman/aws-ecs-app:1",
+    "image": "joelfreeman/aws-ecs-app:2a7196e2",
     "cpu": 256,
     "memory": 512,
     "networkMode": "awsvpc",
