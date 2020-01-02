@@ -18,15 +18,6 @@
         "containerPort": 8080,
         "hostPort": 8080
       }
-    ],
-    "healthCheck": {
-        "command": [ 
-          "CMD-SHELL",
-          "curl -f http://localhost/health:8080 || exit 1" 
-        ],
-        "interval": 30,
-        "retries": 3,
-        "timeout": 3
-      }
-  }
+    ]
+ }
 ]
