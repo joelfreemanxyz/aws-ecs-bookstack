@@ -1,8 +1,10 @@
+# create ecs cluster
 resource "aws_ecs_cluster" "app_ecs_cluster" {
   name               = "app-ecs-cluster"
   capacity_providers = ["FARGATE"]
 }
 
+# create ecs service
 resource "aws_ecs_service" "app_ecs_service" {
   name                = "aws-ecs-app"
   cluster             = aws_ecs_cluster.app_ecs_cluster.id
@@ -10,7 +12,8 @@ resource "aws_ecs_service" "app_ecs_service" {
   scheduling_strategy = "REPLICA"
   launch_type         = "FARGATE"
   desired_count       = 4
-  
+
+  # configure service so tasks can only be put in our two private subnets 
   network_configuration {
     security_groups = [aws_security_group.app_ecs_task_sg.id]
     subnets = [aws_subnet.app_private_subnet_0.id, aws_subnet.app_private_subnet_1.id]
@@ -25,6 +28,7 @@ resource "aws_ecs_service" "app_ecs_service" {
   depends_on = [aws_ecs_task_definition.app_ecs_taskdef, aws_lb.app_lb, aws_lb_target_group.app_lb_target_group, aws_ecs_cluster.app_ecs_cluster, aws_security_group.app_ecs_task_sg, aws_subnet.app_private_subnet_0, aws_subnet.app_private_subnet_1]
 }
 
+# create our task definition
 resource "aws_ecs_task_definition" "app_ecs_taskdef" {
   family = "app"
   network_mode = "awsvpc"

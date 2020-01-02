@@ -1,3 +1,4 @@
+# create application load balancer for our ECS service
 resource "aws_lb" "app_lb" {
   name = "app-alb"
   internal = false
@@ -8,6 +9,7 @@ resource "aws_lb" "app_lb" {
   depends_on = [aws_security_group.app_alb_sg, aws_subnet.app_public_subnet_0, aws_subnet.app_public_subnet_1]
 }
 
+# create target group for our load balancer
 resource "aws_lb_target_group" "app_lb_target_group" {
   name = "app-alb-ecs-tg"
   port = 8080
@@ -15,6 +17,7 @@ resource "aws_lb_target_group" "app_lb_target_group" {
   target_type = "ip"
   vpc_id = aws_vpc.app_vpc.id
 
+  # setup health check
   health_check {
     healthy_threshold   = "3"
     interval            = "30"
@@ -28,15 +31,16 @@ resource "aws_lb_target_group" "app_lb_target_group" {
   depends_on = [aws_lb.app_lb]
 }
 
+# create load balancer listener on port 80
 resource "aws_lb_listener" "app_lb_listener" {
   load_balancer_arn = aws_lb.app_lb.arn
   port = "80"
   protocol = "HTTP"
 
+  # configure load listener to foward reqests to target group
   default_action {
     type = "forward"
     target_group_arn = aws_lb_target_group.app_lb_target_group.arn
   }
   depends_on = [aws_lb.app_lb, aws_lb_target_group.app_lb_target_group]
 }
-
