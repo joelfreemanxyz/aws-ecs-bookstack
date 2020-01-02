@@ -3,7 +3,7 @@ resource "aws_appautoscaling_target" "appautoscaling_target" {
   service_namespace = "ecs"
   resource_id = "service/${aws_ecs_cluster.app_ecs_cluster.name}/${aws_ecs_service.app_ecs_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
-  min_capacity = 4
+  min_capacity = 2
   max_capacity = 8
 
   depends_on = [aws_ecs_cluster.app_ecs_cluster, aws_ecs_service.app_ecs_service]

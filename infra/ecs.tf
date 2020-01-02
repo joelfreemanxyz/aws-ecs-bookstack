@@ -11,7 +11,7 @@ resource "aws_ecs_service" "app_ecs_service" {
   task_definition     = aws_ecs_task_definition.app_ecs_taskdef.arn
   scheduling_strategy = "REPLICA"
   launch_type         = "FARGATE"
-  desired_count       = 4
+  desired_count       = 2
 
   # configure service so tasks can only be put in our two private subnets 
   network_configuration {

@@ -32,7 +32,7 @@ resource "aws_security_group" "app_alb_sg" {
 
 # create sg for our ecs tasks
 resource "aws_security_group" "app_ecs_task_sg" {
-  name = "app-ecs-task-sg"
+  name = "ecs-task-sg"
   vpc_id = aws_vpc.app_vpc.id
 
   # allow incoming traffic on port 8080 only from our load balancer security group
